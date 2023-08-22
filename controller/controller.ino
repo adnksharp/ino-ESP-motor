@@ -7,6 +7,13 @@ Ticker prints;
 
 extern void motorcWrite(short val);
 
+void serialEvent()
+{
+	String s = Serial.readString();
+	if (s.indexOf("restart") != -1)
+		ESP.restart();
+}
+
 void setup()
 {
 	Serial.begin(115200);
@@ -16,10 +23,8 @@ void setup()
 	ledcAttachPin(M2, CHANNEL2);
 
 	prints.attach(0.1, []() {
-		float p = abs(c - 255) - 39;
-		p = p < 0 ? 0 : map(p, 0, 216, 375, 13000) / 100.0;
-		p = c - 255 < 0 ? -p : p;
-		Serial.println(String(p) + "," + String(float(c - 255) * 12 / 255.0));
+		long p = millis() / 100;
+		Serial.println(String(float(p) / 10) + "," + String(float(c - 255) * 12 / 255.0));
 	});
 }
 
